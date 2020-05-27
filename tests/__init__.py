@@ -21,6 +21,15 @@ def multi(first, second = None, third = None):
 	else:
 		print('Triple:', first, second, third)
 
+@interactive.command(2, (int,))
+def plus(a, b):
+	print(a + b)
+
+@interactive.command()
+def nothing():
+	'''This function does nothing.'''
+	pass
+
 class Test(unittest.TestCase):
 	def setUp(self):
 		self.stdin  = sys.stdin
@@ -69,3 +78,9 @@ class Test(unittest.TestCase):
 	
 	def testHelp(self):
 		self.assertTrue(self.runCommand('help').startswith('Available commands:'), 'Help command error')
+
+	def testMapspec(self):
+		self.assertEqual('42\n', self.runCommand('plus 19 23'))
+	
+	def testDoc(self):
+		self.assertIn('This function does nothing.', self.runCommand('help nothing'))

@@ -2,6 +2,9 @@
 
 '''
 
+import sys as _sys
+from traceback import print_exc as _print_exc
+
 _registered = {}
 prompt = '--> '
 
@@ -13,7 +16,21 @@ def _input(prompt = ''):
 		pass
 	return result
 
-def command(argspec = 0):
+def _map(args, mapspec):
+	result = args[1:]
+	if mapspec is not None and len(mapspec) > 0:
+		length = len(mapspec) - 1
+		for i in range(len(result)):
+			result[i] = mapspec[i](result[i]) if i <= length else mapspec[length](result[i])
+	return result
+
+def _help(cmd):
+	if cmd in _registered:
+		print('Help for command {}:\n'.format(cmd))
+		print(_registered[cmd].__doc__)
+		print()
+
+def command(argspec = 0, mapspec = None):
 	def wrapper(func):
 		name = func.__name__
 		if isinstance(argspec, int):
@@ -24,7 +41,7 @@ def command(argspec = 0):
 						name=args[0], require=arg_num, actual=len(args)-1
 					))
 				else:
-					func(*args[1:])
+					func(*_map(args, mapspec))
 		elif isinstance(argspec, tuple):
 			if not (len(argspec) == 2 and isinstance(argspec[0], int) and isinstance(argspec[1], int)):
 				raise TypeError('tuple(int, int) expected')
@@ -35,7 +52,8 @@ def command(argspec = 0):
 						name=args[0], lower=argspec[0], upper=argspec[1], actual=length
 					))
 				else:
-					func(*args[1:])
+					func(*_map(args, mapspec))
+		wrapped.__doc__ = func.__doc__
 		_registered[name] = wrapped
 		return wrapped
 	return wrapper
@@ -47,9 +65,14 @@ def main():
 			try:
 				_registered[line[0]](line)
 			except Exception as e:
-				print('{}: {}'.format(type(e).__name__, str(e)))
+				_print_exc(file=_sys.stdout)
+		elif line[0] == 'help' and len(line) > 1:
+			for cmd in line[1:]:
+				_help(cmd)
 		else:
 			print('Available commands:', ' '.join(_registered.keys()))
+			print('Enter "help <command> for the help of <command>."')
+			print('Enter nothing to exit the program.')
 		line = _input(prompt).split()
 
 __all__ = list(filter(lambda s: not s.startswith('_'), dir()))

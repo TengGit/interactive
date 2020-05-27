@@ -13,12 +13,17 @@ def _input(prompt = ''):
 		pass
 	return result
 
-def command():
+def command(arg_num = 0):
 	def wrapper(func):
 		name = func.__name__
 
 		def wrapped(args):
-			return func()
+			if len(args) - 1 != arg_num:
+				print('{name} requires {require} argument(s), but {actual} given'.format(
+					name=args[0], require=arg_num, actual=len(args)-1
+				))
+			else:
+				func(*args[1:])
 		
 		_registered[name] = wrapped
 		return wrapped

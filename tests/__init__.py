@@ -8,6 +8,10 @@ import interactive
 def cmd1():
 	print('Success cmd1')
 
+@interactive.command(1)
+def hello(who):
+	print('Hello, %s' % who)
+
 class Test(unittest.TestCase):
 	def setUp(self):
 		self.stdin  = sys.stdin
@@ -33,4 +37,8 @@ class Test(unittest.TestCase):
 		interactive.main()
 		self.assertIn('Success cmd1\n', sys.stdout.getvalue())
 
+	def testSingleArgumentCommand(self):
+		sys.stdin = io.StringIO('hello world\n')
+		interactive.main()
+		self.assertIn('Hello, world\n', sys.stdout.getvalue())
 

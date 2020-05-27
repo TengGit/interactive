@@ -20,7 +20,7 @@ def command(argspec = 0):
 			arg_num = argspec
 			def wrapped(args):
 				if len(args) - 1 != arg_num:
-					print('{name} requires {require} argument(s), but {actual} given'.format(
+					raise TypeError('{name} requires {require} argument(s), but {actual} given'.format(
 						name=args[0], require=arg_num, actual=len(args)-1
 					))
 				else:
@@ -31,7 +31,7 @@ def command(argspec = 0):
 			def wrapped(args):
 				length = len(args) - 1
 				if length < argspec[0] or (argspec[1] != 0 and length > argspec[1]):
-					print('{name} requires {lower} to {upper} argument(s), but {actual} given'.format(
+					raise TypeError('{name} requires {lower} to {upper} argument(s), but {actual} given'.format(
 						name=args[0], lower=argspec[0], upper=argspec[1], actual=length
 					))
 				else:
@@ -44,7 +44,10 @@ def main():
 	line = _input(prompt).split()
 	while len(line) > 0:
 		if line[0] != 'help' and line[0] in _registered:
-			_registered[line[0]](line)
+			try:
+				_registered[line[0]](line)
+			except Exception as e:
+				print('{}: {}'.format(type(e).__name__, str(e)))
 		else:
 			print('Available commands:', ' '.join(_registered.keys()))
 		line = _input(prompt).split()

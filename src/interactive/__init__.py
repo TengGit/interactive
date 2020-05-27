@@ -13,18 +13,29 @@ def _input(prompt = ''):
 		pass
 	return result
 
-def command(arg_num = 0):
+def command(argspec = 0):
 	def wrapper(func):
 		name = func.__name__
-
-		def wrapped(args):
-			if len(args) - 1 != arg_num:
-				print('{name} requires {require} argument(s), but {actual} given'.format(
-					name=args[0], require=arg_num, actual=len(args)-1
-				))
-			else:
-				func(*args[1:])
-		
+		if isinstance(argspec, int):
+			arg_num = argspec
+			def wrapped(args):
+				if len(args) - 1 != arg_num:
+					print('{name} requires {require} argument(s), but {actual} given'.format(
+						name=args[0], require=arg_num, actual=len(args)-1
+					))
+				else:
+					func(*args[1:])
+		elif isinstance(argspec, tuple):
+			if not (len(argspec) == 2 and isinstance(argspec[0], int) and isinstance(argspec[1], int)):
+				raise TypeError('tuple(int, int) expected')
+			def wrapped(args):
+				length = len(args) - 1
+				if length < argspec[0] or (argspec[1] != 0 and length > argspec[1]):
+					print('{name} requires {lower} to {upper} argument(s), but {actual} given'.format(
+						name=args[0], lower=argspec[0], upper=argspec[1], actual=length
+					))
+				else:
+					func(*args[1:])
 		_registered[name] = wrapped
 		return wrapped
 	return wrapper

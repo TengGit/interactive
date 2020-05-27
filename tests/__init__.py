@@ -12,6 +12,15 @@ def cmd1():
 def hello(who):
 	print('Hello, %s' % who)
 
+@interactive.command((1,3))
+def multi(first, second = None, third = None):
+	if second is None:
+		print('Single:', first)
+	elif third is None:
+		print('Double:', first, second)
+	else:
+		print('Triple:', first, second, third)
+
 class Test(unittest.TestCase):
 	def setUp(self):
 		self.stdin  = sys.stdin
@@ -50,3 +59,10 @@ class Test(unittest.TestCase):
 	def testSingleArgumentCommand(self):
 		self.assertEqual('Hello, world\n', self.runCommand('hello world'))
 
+	def testVariableArgumentCommand(self):
+		self.assertEqual('Single: test\n', self.runCommand('multi test'))
+		self.assertEqual('Double: blah blow\n', self.runCommand('multi blah blow'))
+		self.assertEqual('Triple: foo bar baz\n', self.runCommand('multi foo bar baz'))
+
+	def testErrorPrompt(self):
+		self.assertNotEqual('Success cmd1\n', self.runCommand('cmd1 fail'))

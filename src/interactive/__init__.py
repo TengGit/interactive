@@ -71,8 +71,9 @@ def main():
 				_help(cmd)
 		else:
 			print('Available commands:', ' '.join(_registered.keys()))
-			print('Enter "help <command> for the help of <command>."')
+			print('Enter "help <command>" for the help of <command>.')
 			print('Enter nothing to exit the program.')
+			print()
 		line = _input(prompt).split()
 
 __all__ = list(filter(lambda s: not s.startswith('_'), dir()))

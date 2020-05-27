@@ -21,9 +21,9 @@ def multi(first, second = None, third = None):
 	else:
 		print('Triple:', first, second, third)
 
-@interactive.command(2, (int,))
-def plus(a, b):
-	print(a + b)
+@interactive.command((1,0), (int,))
+def plus(*nums):
+	print(sum(nums))
 
 @interactive.command()
 def nothing():
@@ -81,6 +81,7 @@ class Test(unittest.TestCase):
 
 	def testMapspec(self):
 		self.assertEqual('42\n', self.runCommand('plus 19 23'))
+		self.assertEqual('42\n', self.runCommand('plus 1 2 10 29'))
 	
 	def testDoc(self):
 		self.assertIn('This function does nothing.', self.runCommand('help nothing'))

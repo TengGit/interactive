@@ -17,18 +17,23 @@ def _input(prompt = ''):
 	return result
 
 def _map(args, mapspec):
-	result = args[1:]
+	result = list(args[1:])
 	if mapspec is not None and len(mapspec) > 0:
 		length = len(mapspec) - 1
 		for i in range(len(result)):
 			result[i] = mapspec[i](result[i]) if i <= length else mapspec[length](result[i])
 	return result
 
-def _help(cmd):
+def _help(cmd = None):
 	if cmd in _registered:
 		print('Help for command {}:\n'.format(cmd))
 		print(_registered[cmd].__doc__)
-		print()
+	elif cmd == 'help' or cmd is None:
+		print('Enter "help <command>" for the help of <command>.')
+		print('Enter nothing to exit the program.')
+	else:
+		print('{} not found.'.format(cmd))
+	print()
 
 def command(argspec = 0, mapspec = None):
 	def wrapper(func):
@@ -71,9 +76,7 @@ def main():
 				_help(cmd)
 		else:
 			print('Available commands:', ' '.join(_registered.keys()))
-			print('Enter "help <command>" for the help of <command>.')
-			print('Enter nothing to exit the program.')
-			print()
+			_help()
 		line = _input(prompt).split()
 
 __all__ = list(filter(lambda s: not s.startswith('_'), dir()))

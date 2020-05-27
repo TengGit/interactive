@@ -66,3 +66,6 @@ class Test(unittest.TestCase):
 
 	def testErrorPrompt(self):
 		self.assertNotEqual('Success cmd1\n', self.runCommand('cmd1 fail'))
+	
+	def testHelp(self):
+		self.assertTrue(self.runCommand('help').startswith('Available commands:'), 'Help command error')

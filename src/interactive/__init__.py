@@ -43,11 +43,10 @@ def command(argspec = 0):
 def main():
 	line = _input(prompt).split()
 	while len(line) > 0:
-		if line[0] in _registered:
+		if line[0] != 'help' and line[0] in _registered:
 			_registered[line[0]](line)
 		else:
-			# Command isn't registered
-			pass
+			print('Available commands:', ' '.join(_registered.keys()))
 		line = _input(prompt).split()
 
 __all__ = list(filter(lambda s: not s.startswith('_'), dir()))

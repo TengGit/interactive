@@ -32,13 +32,21 @@ class Test(unittest.TestCase):
 		interactive.main()
 		self.assertEqual(sys.stdout.getvalue(), prompt_str)
 
-	def testEmptyCommand(self):
-		sys.stdin = io.StringIO('cmd1\n')
+	def runCommand(self, str):
+		sys.stdout = io.StringIO()
+		sys.stdin  = io.StringIO(str + '\n')
 		interactive.main()
-		self.assertIn('Success cmd1\n', sys.stdout.getvalue())
+		allstr = sys.stdout.getvalue()
+		prompt = interactive.prompt
+		length = len(prompt)
+		assert len(allstr) >= length * 2
+		assert allstr.startswith(self.prompt)
+		assert allstr.endswith(self.prompt)
+		return allstr[length:-length]
+
+	def testEmptyCommand(self):
+		self.assertEqual('Success cmd1\n', self.runCommand('cmd1'))
 
 	def testSingleArgumentCommand(self):
-		sys.stdin = io.StringIO('hello world\n')
-		interactive.main()
-		self.assertIn('Hello, world\n', sys.stdout.getvalue())
+		self.assertEqual('Hello, world\n', self.runCommand('hello world'))
 

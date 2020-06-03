@@ -30,6 +30,10 @@ def nothing():
 	'''This function does nothing.'''
 	pass
 
+@interactive.command(name = 'cmd2-alias')
+def cmd2():
+	print('Success cmd2')
+
 class Test(unittest.TestCase):
 	def setUp(self):
 		self.stdin  = sys.stdin
@@ -85,3 +89,7 @@ class Test(unittest.TestCase):
 	
 	def testDoc(self):
 		self.assertIn('This function does nothing.', self.runCommand('help nothing'))
+
+	def testChangeName(self):
+		self.assertNotEqual('Success cmd2\n', self.runCommand('cmd2'))
+		self.assertEqual('Success cmd2\n', self.runCommand('cmd2-alias'))

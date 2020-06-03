@@ -35,9 +35,9 @@ def _help(cmd = None):
 		print('{} not found.'.format(cmd))
 	print()
 
-def command(argspec = 0, mapspec = None):
+def command(argspec = 0, mapspec = None, name = None):
 	def wrapper(func):
-		name = func.__name__
+		func_name = func.__name__ if name is None else name
 		if isinstance(argspec, int):
 			arg_num = argspec
 			def wrapped(args):
@@ -59,7 +59,7 @@ def command(argspec = 0, mapspec = None):
 				else:
 					func(*_map(args, mapspec))
 		wrapped.__doc__ = func.__doc__
-		_registered[name] = wrapped
+		_registered[func_name] = wrapped
 		return wrapped
 	return wrapper
 
